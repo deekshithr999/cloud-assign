@@ -47,7 +47,6 @@ def submit():
     last_name = request.form['last_name']
     email = request.form['email']
 
-    print("====================>", password, first_name, username)
     CREATE_TABLE =  '''
                         CREATE TABLE IF NOT EXISTS users (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -62,7 +61,9 @@ def submit():
                                 INSERT INTO users (username, password, first_name, last_name, email)
                                 VALUES (?, ?, ?, ?, ?)
                         '''
-    CHECK_USER = ''' SELECT username, password  FROM users WHERE username=? '''
+
+
+    CHECK_USER = ''' SELECT username, password  FROM users  WHERE username=?'''
     execute_query(CREATE_TABLE)
     nfile = request.files['textfile']
     wc = None #default val
@@ -71,10 +72,8 @@ def submit():
 
     print("debug word count === ", wc)
 
-    print("=================hereee1========")
-    user_exists = execute_query(CHECK_USER, (username))
-    commit()
-    print("=============here2=========")
+    user_exists = execute_query(CHECK_USER, (username,) )
+    #commit()
     print("res from user exists", user_exists)
     if user_exists: 
         if user_exists[0][1] != password:
@@ -84,7 +83,8 @@ def submit():
 
     res = execute_query(CREATE_TABLE)
     commit()
-    if username is None or password is None or first_name is None or last_name is None or email is None:
+    emp =''
+    if emp in (username, first_name, last_name, email) :
         return render_template('mainpage.html', error='Enter all Details !!')
     res = execute_query(INSERT_INTO_TABLE, (username, password, first_name, last_name, email))
     print("res from db insert", res)
